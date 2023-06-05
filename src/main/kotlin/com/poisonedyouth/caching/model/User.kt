@@ -4,12 +4,13 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import com.poisonedyouth.caching.failure.Failure
+import java.io.Serializable
 import java.time.LocalDate
 import java.util.UUID
 
 private const val MINIMUM_YEAR = 1900
 
-interface User {
+interface User : Serializable {
     val id: Identity
     val firstName: String
     val lastName: String
@@ -67,7 +68,7 @@ interface User {
     }
 }
 
-sealed interface Identity {
+sealed interface Identity : Serializable {
     fun getIdOrNull(): UUID? {
         return when (this) {
             is UUIDIdentity -> this.id

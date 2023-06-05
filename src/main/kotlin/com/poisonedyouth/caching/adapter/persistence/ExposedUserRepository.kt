@@ -11,11 +11,13 @@ import com.poisonedyouth.caching.model.Identity
 import com.poisonedyouth.caching.model.UUIDIdentity
 import com.poisonedyouth.caching.model.User
 import com.poisonedyouth.caching.port.UserRepository
+import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.slf4j.LoggerFactory
@@ -23,7 +25,7 @@ import org.slf4j.LoggerFactory
 open class ExposedUserRepository : UserRepository {
     private val logger = LoggerFactory.getLogger(ExposedUserRepository::class.java)
 
-    override fun save(user: User): Either<Failure, User> = transaction {
+    override suspend fun save(user: User): Either<Failure, User> = dbQuery {
         either {
             val existingUser = findBy(user.id).bind()
             ensure(existingUser == null) {
@@ -52,7 +54,7 @@ open class ExposedUserRepository : UserRepository {
         }
     }
 
-    override fun findBy(userId: Identity): Either<Failure, User?> = transaction {
+    override suspend fun findBy(userId: Identity): Either<Failure, User?> = dbQuery {
         eval(logger) {
             val existingUser = UserTable.select { UserTable.id eq userId.getIdOrNull() }.firstOrNull()
             existingUser?.let { resultRow ->
@@ -61,7 +63,7 @@ open class ExposedUserRepository : UserRepository {
         }
     }
 
-    override fun update(user: User): Either<Failure, User> = transaction {
+    override suspend fun update(user: User): Either<Failure, User> = dbQuery {
         either {
             val existingUser = findBy(user.id).bind()
             ensure(existingUser == null) {
@@ -84,7 +86,7 @@ open class ExposedUserRepository : UserRepository {
         }
     }
 
-    override fun delete(userId: Identity): Either<Failure, Unit> = transaction {
+    override suspend fun delete(userId: Identity): Either<Failure, Unit> = dbQuery {
         either {
             UserTable.deleteWhere { UserTable.id eq userId.getIdOrNull() }
             Unit
@@ -113,4 +115,7 @@ open class ExposedUserRepository : UserRepository {
             )
         }
     }
+    private suspend fun <T> dbQuery(block: suspend () -> T): T =
+        newSuspendedTransaction(Dispatchers.IO) { block() }
+
 }

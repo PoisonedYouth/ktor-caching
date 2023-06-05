@@ -31,7 +31,7 @@ class UserUseCaseTest {
     private val userUseCase = UserUseCase(userRepository)
 
     @Container
-    val postgreSQLContainer = PostgreSQLContainer("postgres:14.4-alpine")
+    val postgreSQLContainer: PostgreSQLContainer<*> = PostgreSQLContainer("postgres:14.4-alpine")
         .withExtraHost("localhost", "127.0.0.1")
         .withExposedPorts(5432)
         .withDatabaseName("db")

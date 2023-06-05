@@ -16,23 +16,23 @@ import com.poisonedyouth.caching.port.UserRepository
 class UserUseCase(
     private val userRepository: UserRepository
 ) : UserPort {
-    override fun addNewUser(user: UserDto): Either<Failure, User> {
+    override suspend fun addNewUser(user: UserDto): Either<Failure, User> {
         return user.toUser().flatMap {
             userRepository.save(it)
         }
     }
 
-    override fun updateUser(user: UserDto): Either<Failure, User> {
+    override suspend fun updateUser(user: UserDto): Either<Failure, User> {
         return user.toUser().flatMap {
             userRepository.update(it)
         }
     }
 
-    override fun deleteUser(userId: Identity): Either<Failure, Unit> {
+    override suspend fun deleteUser(userId: Identity): Either<Failure, Unit> {
         return userRepository.delete(userId)
     }
 
-    override fun findUser(userId: Identity): Either<Failure, User> {
+    override suspend fun findUser(userId: Identity): Either<Failure, User> {
         return userRepository.findBy(userId).flatMap { existingUser ->
             existingUser?.right()
                 ?: Failure.ValidationFailure("User with id ${userId.getIdOrNull()} does not exists.").left()

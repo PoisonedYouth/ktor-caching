@@ -9,43 +9,63 @@ import com.poisonedyouth.caching.service.AddressDto
 import com.poisonedyouth.caching.service.UserDto
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
+import io.ktor.server.engine.handleFailure
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import org.slf4j.LoggerFactory
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTimedValue
 
 class UserController(
     private val userPort: UserPort
 ) {
     private val logger = LoggerFactory.getLogger(UserController::class.java)
 
+    @OptIn(ExperimentalTime::class)
     suspend fun addNewUser(call: ApplicationCall) {
-        val user = call.receive<UserDto>()
-        userPort.addNewUser(user).fold({ failure -> handleFailure(failure, call) }) {
-            call.respond(HttpStatusCode.Created, it.toUserDto())
+        val duration = measureTimedValue {
+            val user = call.receive<UserDto>()
+            userPort.addNewUser(user).fold({ failure -> handleFailure(failure, call) }) {
+                call.respond(HttpStatusCode.Created, it.toUserDto())
+            }
         }
+        println("addNewUser: ${duration.duration}")
     }
 
+    @OptIn(ExperimentalTime::class)
     suspend fun updateUser(call: ApplicationCall) {
-        val user = call.receive<UserDto>()
-        userPort.updateUser(user).fold({ failure -> handleFailure(failure, call) }) {
-            call.respond(HttpStatusCode.OK, it.toUserDto())
+        val duration = measureTimedValue {
+            val user = call.receive<UserDto>()
+            userPort.updateUser(user).fold({ failure -> handleFailure(failure, call) }) {
+                call.respond(HttpStatusCode.OK, it.toUserDto())
+            }
         }
+        println("updateUser: ${duration.duration}")
     }
 
+    @OptIn(ExperimentalTime::class)
     suspend fun deleteUser(call: ApplicationCall) {
-        val userId = call.parameters["userId"]
-        val identity = UUIDIdentity.fromNullableString(userId)
-        userPort.deleteUser(identity).fold({ failure -> handleFailure(failure, call) }) {
-            call.respond(HttpStatusCode.Accepted, Unit)
+        val duration = measureTimedValue {
+            val userId = call.parameters["userId"]
+            val identity = UUIDIdentity.fromNullableString(userId)
+            userPort.deleteUser(identity).fold({ failure -> handleFailure(failure, call) }) {
+                call.respond(HttpStatusCode.Accepted, Unit)
+            }
         }
+        println("deleteUser: ${duration.duration}")
+
     }
 
+    @OptIn(ExperimentalTime::class)
     suspend fun findUser(call: ApplicationCall) {
-        val userId = call.parameters["userId"]
-        val identity = UUIDIdentity.fromNullableString(userId)
-        userPort.findUser(identity).fold({ failure -> handleFailure(failure, call) }) {
-            call.respond(HttpStatusCode.Accepted, it.toUserDto())
+        val duration = measureTimedValue {
+            val userId = call.parameters["userId"]
+            val identity = UUIDIdentity.fromNullableString(userId)
+            userPort.findUser(identity).fold({ failure -> handleFailure(failure, call) }) {
+                call.respond(HttpStatusCode.Accepted, it.toUserDto())
+            }
         }
+        println("findUser: ${duration.duration}")
     }
 
     private suspend fun handleFailure(failure: Failure, call: ApplicationCall) {

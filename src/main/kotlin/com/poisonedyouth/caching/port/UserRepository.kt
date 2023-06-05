@@ -6,8 +6,8 @@ import com.poisonedyouth.caching.model.Identity
 import com.poisonedyouth.caching.model.User
 
 interface UserRepository {
-    fun save(user: User): Either<Failure, User>
-    fun findBy(userId: Identity): Either<Failure, User?>
-    fun update(user: User): Either<Failure, User>
-    fun delete(userId: Identity): Either<Failure, Unit>
+    suspend fun save(user: User): Either<Failure, User>
+    suspend fun findBy(userId: Identity): Either<Failure, User?>
+    suspend fun update(user: User): Either<Failure, User>
+    suspend fun delete(userId: Identity): Either<Failure, Unit>
 }

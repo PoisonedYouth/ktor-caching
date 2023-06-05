@@ -4,6 +4,8 @@ val logbackVersion: String by project
 val exposedVersion: String by project
 val koinKtorVersion: String by project
 val postgresqlVersion: String by project
+val hikaricpVersion: String by project
+val ehcacheVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.8.21"
@@ -39,6 +41,9 @@ dependencies {
 
     implementation(platform("io.arrow-kt:arrow-stack:1.2.0-RC"))
     implementation("io.arrow-kt:arrow-core")
+
+    implementation("com.zaxxer:HikariCP:$hikaricpVersion")
+    implementation("org.ehcache:ehcache:$ehcacheVersion")
 
     implementation("org.postgresql:postgresql:$postgresqlVersion")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")

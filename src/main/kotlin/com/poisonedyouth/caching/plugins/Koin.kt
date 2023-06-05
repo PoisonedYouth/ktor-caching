@@ -1,6 +1,6 @@
 package com.poisonedyouth.caching.plugins
 
-import com.poisonedyouth.caching.adapter.InMemoryUserRepository
+import com.poisonedyouth.caching.adapter.persistence.ExposedUserRepository
 import com.poisonedyouth.caching.adapter.UserController
 import com.poisonedyouth.caching.port.UserPort
 import com.poisonedyouth.caching.port.UserRepository
@@ -18,7 +18,8 @@ fun KoinApplication.defaultModule() = modules(defaultModule)
 val defaultModule = module {
     singleOf(::UserUseCase) bind UserPort::class
     singleOf(::UserController) bind UserController::class
-    singleOf(::InMemoryUserRepository) bind UserRepository::class
+    singleOf(::ExposedUserRepository) bind UserRepository::class
+    singleOf(::DefaultDatabaseFactory) bind DatabaseFactory::class
 }
 
 fun Application.configureDependencyInjection() {

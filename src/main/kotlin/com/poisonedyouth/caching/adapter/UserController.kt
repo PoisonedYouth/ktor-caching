@@ -44,7 +44,7 @@ class UserController(
         val userId = call.parameters["userId"]
         val identity = UUIDIdentity.fromNullableString(userId)
         userPort.findUser(identity).fold({ failure -> handleFailure(failure, call) }) {
-            call.respond(HttpStatusCode.Accepted, it)
+            call.respond(HttpStatusCode.Accepted, it.toUserDto())
         }
     }
 
@@ -64,7 +64,7 @@ class UserController(
 }
 
 private fun User.toUserDto() = UserDto(
-    id = this.id.getIdOrNull().toString(),
+    id = this.id.getIdOrNull()?.toString(),
     firstName = this.firstName,
     lastName = this.lastName,
     birthDate = this.birthDate,
@@ -72,7 +72,7 @@ private fun User.toUserDto() = UserDto(
 )
 
 private fun Address.toAddressDto() = AddressDto(
-    id = this.id.getIdOrNull().toString(),
+    id = this.id.getIdOrNull()?.toString(),
     streetName = this.streetName,
     streetNumber = this.streetNumber,
     zipCode = this.zipCode,

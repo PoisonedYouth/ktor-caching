@@ -1,5 +1,6 @@
 package com.poisonedyouth.caching
 
+import com.poisonedyouth.caching.plugins.configureDatabase
 import com.poisonedyouth.caching.plugins.configureDependencyInjection
 import com.poisonedyouth.caching.plugins.configureRouting
 import com.poisonedyouth.caching.plugins.configureSerialization
@@ -14,6 +15,7 @@ fun main() {
 
 fun Application.module() {
     configureDependencyInjection()
+    configureDatabase()
     configureSerialization()
     configureRouting()
 }

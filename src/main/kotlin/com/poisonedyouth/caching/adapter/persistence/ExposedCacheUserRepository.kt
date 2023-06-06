@@ -25,7 +25,7 @@ class ExposedCacheUserRepository(
             "userCache",
             CacheConfigurationBuilder.newCacheConfigurationBuilder(
                 UUID::class.javaObjectType,
-                User::class.java,
+                UserEntity::class.java,
                 ResourcePoolsBuilder.newResourcePoolsBuilder()
                     .heap(1000, EntryUnit.ENTRIES)
                     .offheap(10, MemoryUnit.MB)
@@ -34,18 +34,21 @@ class ExposedCacheUserRepository(
         )
         .build(true)
 
-    private val userCache = cacheManager.getCache("userCache", UUID::class.javaObjectType, User::class.java)
+    private val userCache = cacheManager.getCache("userCache", UUID::class.javaObjectType, UserEntity::class.java)
 
     override suspend fun save(user: User): Either<Failure, User> {
-        return delegate.save(user).also { userCache.put(user.id.getIdOrNull(), user) }
+        return delegate.save(user).also { userCache.put(user.id.getIdOrNull(), user.toUserEntity()) }
     }
 
     override suspend fun findBy(userId: Identity): Either<Failure, User?> = either {
-        userCache.get(userId.getIdOrNull()) ?: delegate.findBy(userId).bind().also { userCache.put(userId.getIdOrNull(), it) }
+        getUserFromCache(userId)
+            ?: delegate.findBy(userId).bind().also { userCache.put(userId.getIdOrNull(), it?.toUserEntity()) }
     }
 
+    private fun getUserFromCache(userId: Identity) = userCache.get(userId.getIdOrNull())?.toUser()?.getOrNull()
+
     override suspend fun update(user: User): Either<Failure, User> {
-        return delegate.update(user).also { userCache.put(user.id.getIdOrNull(), user) }
+        return delegate.update(user).also { userCache.put(user.id.getIdOrNull(), user.toUserEntity()) }
     }
 
     override suspend fun delete(userId: Identity): Either<Failure, Unit> {

@@ -4,12 +4,11 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import com.poisonedyouth.caching.failure.Failure
-import java.io.Serializable
 
 private const val MINIMUM_VALID_ZIP_CODE = 10000
 private const val MAXIMUM_VALID_ZIP_CODE = 99999
 
-sealed interface Address : Serializable {
+sealed interface Address {
     val id: Identity
     val streetName: String
     val streetNumber: String

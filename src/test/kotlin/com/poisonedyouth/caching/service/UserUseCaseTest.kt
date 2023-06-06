@@ -7,6 +7,7 @@ import com.poisonedyouth.caching.adapter.persistence.UserTable
 import com.poisonedyouth.caching.failure.Failure
 import com.poisonedyouth.caching.model.UUIDIdentity
 import com.poisonedyouth.caching.port.UserRepository
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -54,7 +55,7 @@ class UserUseCaseTest {
     }
 
     @Test
-    fun `addNewUser throws exception if user already exists`() {
+    fun `addNewUser throws exception if user already exists`() = runBlocking{
         // given
         val id = UUIDIdentity(UUID.randomUUID())
         doReturn(
@@ -96,7 +97,7 @@ class UserUseCaseTest {
     }
 
     @Test
-    fun `addNewUser throws exception if loading of user fails`() {
+    fun `addNewUser throws exception if loading of user fails`() = runBlocking {
         // given
         val id = UUIDIdentity(UUID.randomUUID())
         whenever(userRepository.findBy(id)).thenAnswer {

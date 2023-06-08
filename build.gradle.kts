@@ -6,6 +6,7 @@ val koinKtorVersion: String by project
 val postgresqlVersion: String by project
 val hikaricpVersion: String by project
 val ehcacheVersion: String by project
+val redisVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.8.21"
@@ -44,6 +45,9 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:$hikaricpVersion")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
+
+    implementation("org.redisson:redisson:$redisVersion")
+
 
     implementation("org.postgresql:postgresql:$postgresqlVersion")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")

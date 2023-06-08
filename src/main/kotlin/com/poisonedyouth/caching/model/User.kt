@@ -5,7 +5,7 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import com.poisonedyouth.caching.failure.Failure
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 private const val MINIMUM_YEAR = 1900
 
@@ -73,6 +73,13 @@ sealed interface Identity {
             is UUIDIdentity -> this.id
             NoIdentity -> null
         }
+    }
+
+    fun getIdOrFailure(): Either<Failure, UUID> = either {
+        ensure(this@Identity is UUIDIdentity) {
+            Failure.ValidationFailure("The id is not set yet.")
+        }
+        this@Identity.id
     }
 }
 

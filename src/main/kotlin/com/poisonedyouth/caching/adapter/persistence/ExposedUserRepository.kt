@@ -18,7 +18,6 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.slf4j.LoggerFactory
 
@@ -66,8 +65,8 @@ open class ExposedUserRepository : UserRepository {
     override suspend fun update(user: User): Either<Failure, User> = dbQuery {
         either {
             val existingUser = findBy(user.id).bind()
-            ensure(existingUser == null) {
-                Failure.ValidationFailure("User with id '${user.id.getIdOrNull()}' already exists.")
+            ensure(existingUser != null) {
+                Failure.ValidationFailure("User with id '${user.id.getIdOrNull()}' does not exists.")
             }
             eval(logger) {
                 UserTable.update({ UserTable.id eq user.id.getIdOrNull() }) { userUpdateStatement ->
@@ -115,6 +114,7 @@ open class ExposedUserRepository : UserRepository {
             )
         }
     }
+
     private suspend fun <T> dbQuery(block: suspend () -> T): T =
         newSuspendedTransaction(Dispatchers.IO) { block() }
 

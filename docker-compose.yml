@@ -11,3 +11,11 @@ services:
       PGUSER: root
       POSTGRES_PASSWORD: password
       POSTGRES_DB: db
+  redis:
+    image: 'bitnami/redis:latest'
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'

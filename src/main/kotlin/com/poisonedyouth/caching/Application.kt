@@ -4,9 +4,8 @@ import com.poisonedyouth.caching.plugins.configureDatabase
 import com.poisonedyouth.caching.plugins.configureDependencyInjection
 import com.poisonedyouth.caching.plugins.configureRouting
 import com.poisonedyouth.caching.plugins.configureSerialization
+import com.poisonedyouth.caching.plugins.configureShutdownHooks
 import io.ktor.server.application.Application
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -15,4 +14,6 @@ fun Application.module() {
     configureDatabase()
     configureSerialization()
     configureRouting()
+
+    configureShutdownHooks()
 }
